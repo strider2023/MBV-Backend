@@ -1,0 +1,10 @@
+dependencies {
+    compile project (':framework')
+    compile 'antlr:antlr:2.7.7'
+    compile 'mysql:mysql-connector-java:5.1.31'
+    runtime ('com.fasterxml:classmate:0.8.0')
+    compile 'commons-dbcp:commons-dbcp:1.4'
+    compile hibernate
+	compile spring_jdbc
+	compile validation
+}

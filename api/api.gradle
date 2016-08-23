@@ -1,0 +1,12 @@
+apply plugin: 'application'
+
+bootRepackage {
+    mainClassName = 'com.mbv.api.application.APIApplication'
+}
+
+dependencies {
+	compile project (':baseapp')
+	compile project (':persist')
+    compile web
+    compile spring_security
+}

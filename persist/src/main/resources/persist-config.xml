@@ -1,0 +1,154 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <import resource="classpath:framework-config.xml" />
+
+    <context:property-placeholder location="classpath:db.properties" order="2" ignore-unresolvable="true"/>
+
+    <bean id="mbv.transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="mbv.persist.hibernateSessionFactory"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="mbv.transactionManager" proxy-target-class="true"/>
+
+    <bean id="mbv.persist.datasource" class="org.apache.commons.dbcp.BasicDataSource"
+        destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="${db.url}" />
+        <property name="username" value="${db.username}" />
+        <property name="password" value="${db.password}" />
+        <property name="maxActive" value="50" />
+        <property name="maxIdle" value="-1" />
+        <property name="minIdle" value="1" />
+        <property name="initialSize" value="10" />
+        <property name="maxWait" value="20000" />
+        <property name="testOnBorrow" value="true" />
+        <property name="defaultAutoCommit" value="false" />
+        <property name="defaultReadOnly" value="false" />
+        <property name="validationQuery" value="select 1 from dual" />
+        <property name="removeAbandoned" value="true"/>
+        <property name="removeAbandonedTimeout" value="120"/>
+        <property name="accessToUnderlyingConnectionAllowed" value="true"/>
+    </bean>
+
+    <bean id="mbv.persist.hibernateSessionFactoryBase"
+        class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"
+        abstract="true">
+        <property name="dataSource" ref="mbv.persist.datasource" />
+        <property name="annotatedClasses">
+            <list>
+                <value>com.mbv.persist.entity.BankAccount</value>
+                <value>com.mbv.persist.entity.BankCodes</value>
+                <value>com.mbv.persist.entity.EducationDegree</value>
+                <value>com.mbv.persist.entity.Feedback</value>
+                <value>com.mbv.persist.entity.LoanBorrowerInfo</value>
+                <value>com.mbv.persist.entity.LoanCategory</value>
+                <value>com.mbv.persist.entity.LoanInstallment</value>
+                <value>com.mbv.persist.entity.LoanInterest</value>
+                <value>com.mbv.persist.entity.LoanLenderInfo</value>
+                <value>com.mbv.persist.entity.LoanOfferCode</value>
+                <value>com.mbv.persist.entity.LoanReceipt</value>
+                <value>com.mbv.persist.entity.User</value>
+                <value>com.mbv.persist.entity.UserDevice</value>
+                <value>com.mbv.persist.entity.UserEducation</value>
+                <value>com.mbv.persist.entity.UserKYC</value>
+                <value>com.mbv.persist.entity.UserLocation</value>
+                <value>com.mbv.persist.entity.UserScore</value>
+                <value>com.mbv.persist.entity.UserSession</value>
+                <value>com.mbv.persist.entity.UserTimeline</value>
+                <value>com.mbv.persist.entity.UserTransaction</value>
+                <value>com.mbv.persist.entity.UserWallet</value>
+                <value>com.mbv.persist.entity.VerificationOTP</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="mbv.persist.hibernateSessionFactory"
+        class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"
+        parent="mbv.persist.hibernateSessionFactoryBase">
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop>
+                <prop key="connection.autocommit">false</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="format_sql">true</prop>
+                <prop key="use_sql_comments">false</prop>
+                <prop key="current_session_context_class">thread</prop>
+                <prop key="hibernate.jdbc.batch_size">2000</prop>
+                <prop key="hibernate.connection.release_mode">after_transaction</prop>
+                <prop key="hibernate.transaction.flush_before_completion">true</prop>
+                <prop key="hibernate.order_inserts">true</prop>
+                <prop key="hibernate.order_updates">true</prop>
+                <prop key="hibernate.c3p0.min_size">30</prop>
+                <prop key="hibernate.c3p0.max_size">50</prop>
+                <prop key="hibernate.c3p0.timeout">28800</prop>
+                <prop key="hibernate.c3p0.max_statements">2000</prop>
+                <prop key="hibernate.c3p0.idle_test_period">3000</prop>
+                <prop key="hibernate.cache.use_second_level_cache">false</prop>
+                <prop key="hibernate.cache.use_query_cache">false</prop>
+                <!-- <prop key="hibernate.hbm2ddl.auto">update</prop> -->
+            </props>
+        </property>
+    </bean>
+
+    <bean id="abstractBaseSession" class="com.mbv.persist.dao.impl.AbstractBaseSession" abstract="true">
+        <property name="sessionFactory" ref="mbv.persist.hibernateSessionFactory" />
+    </bean>
+
+    <bean id="baseEntityDAO" class="com.mbv.persist.dao.impl.BaseEntityDAOImpl" abstract="true"
+        parent="abstractBaseSession">
+    </bean>
+
+    <bean id="bankAccountDAOImpl" class="com.mbv.persist.dao.impl.BankAccountDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="bankCodesDAOImpl" class="com.mbv.persist.dao.impl.BankCodesDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="educationDegreeDAO" class="com.mbv.persist.dao.impl.EducationDegreeDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="feedbackDAO" class="com.mbv.persist.dao.impl.FeedbackDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="loanBorrowerInfoDAO" class="com.mbv.persist.dao.impl.LoanBorrowerInfoDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="loanCategoryDAO" class="com.mbv.persist.dao.impl.LoanCategoryDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="loanInstallmentDAO" class="com.mbv.persist.dao.impl.LoanInstallmentDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="loanInterestDAO" class="com.mbv.persist.dao.impl.LoanInterestDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="loanLenderInfoDAO" class="com.mbv.persist.dao.impl.LoanLenderInfoDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="loanOfferCodeDAO" class="com.mbv.persist.dao.impl.LoanOfferCodeDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="loanReceiptDAO" class="com.mbv.persist.dao.impl.LoanReceiptDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="userDAO" class="com.mbv.persist.dao.impl.UserDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="userScoreDAO" class="com.mbv.persist.dao.impl.UserScoreDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="userSessionDAO" class="com.mbv.persist.dao.impl.UserSessionDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="userDeviceDAO" class="com.mbv.persist.dao.impl.UserDeviceDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="userEducationDAO" class="com.mbv.persist.dao.impl.UserEducationDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="userKycDAO" class="com.mbv.persist.dao.impl.UserKycDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="userLocationDAO" class="com.mbv.persist.dao.impl.UserLocationDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="userTimelineDAO" class="com.mbv.persist.dao.impl.UserTimelineDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="userTransactionDAO" class="com.mbv.persist.dao.impl.UserTransactionDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="userWalletDAO" class="com.mbv.persist.dao.impl.UserWalletDAOImpl" parent="baseEntityDAO"/>
+
+    <bean id="verficationOtpDAO" class="com.mbv.persist.dao.impl.VerificationOtpDAOImpl" parent="baseEntityDAO"/>
+
+</beans>

@@ -1,0 +1,12 @@
+apply plugin:'application'
+
+bootRepackage {
+    mainClassName = 'com.mbv.sched.quartz.MBVScheduler'
+}
+
+dependencies {
+    compile project (':framework')
+    compile project (':persist')
+    compile springquartz
+    compile 'org.quartz-scheduler:quartz:1.7.3'
+}

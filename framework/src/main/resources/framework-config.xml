@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <context:property-placeholder location="classpath:sms.properties,classpath:amazonS3.properties,classpath:email.properties,classpath:encryption.properties,classpath:wallet.properties,classpath:gcm.properties" order="2" ignore-unresolvable="true"/>
+
+    <bean id="emailProps" class="com.mbv.framework.props.EmailProps">
+        <property name="user" value="${smtp.user}" />
+        <property name="password" value="${smtp.password}" />
+        <property name="host" value="${smtp.host}" />
+        <property name="port" value="${smtp.port}" />
+        <property name="replyFrom" value="${smtp.replyFrom}" />
+    </bean>
+
+    <bean id="smtp" class="com.mbv.framework.util.SMTP">
+        <property name="emailProps" ref="emailProps" />
+    </bean>
+
+    <bean id="smsProps" class="com.mbv.framework.props.SMSProps">
+        <property name="username" value="${sms.username}" />
+        <property name="password" value="${sms.password}" />
+        <property name="defaultSender" value="${sms.defaultSender}" />
+    </bean>
+
+    <bean id="smsUtil" class="com.mbv.framework.util.SMSUtil">
+        <property name="smsProps" ref="smsProps" />
+    </bean>
+
+    <bean id="amazonS3Props" class="com.mbv.framework.props.AmazonS3Props">
+        <property name="accessKeyId" value="${s3.accessKeyId}" />
+        <property name="secretKey" value="${s3.secretKey}" />
+        <property name="rootBucket" value="${s3.rootBucket}" />
+        <property name="imageBucket" value="${s3.imageBucket}" />
+        <property name="receiptBucket" value="${s3.receiptBucket}" />
+    </bean>
+
+    <bean id="uploadFile" class="com.mbv.framework.util.UploadFile">
+        <property name="amazonS3Props" ref="amazonS3Props" />
+    </bean>
+
+    <bean id="frameworkProps" class="com.mbv.framework.props.FrameworkProps">
+        <property name="encryptionKey" value="${encryption.baseKey}" />
+    </bean>
+
+    <bean id="desEncryption" class="com.mbv.framework.util.DESEncryption">
+        <property name="frameworkProps" ref="frameworkProps" />
+    </bean>
+
+    <bean id="walletProps" class="com.mbv.framework.props.WalletProps">
+        <property name="bankAccount" value="${w.account}" />
+        <property name="ifscCode" value="${w.ifsc}" />
+        <property name="name" value="${w.name}" />
+    </bean>
+
+    <bean id="walletUtil" class="com.mbv.framework.util.WalletUtil">
+        <property name="walletProps" ref="walletProps" />
+    </bean>
+
+    <bean id="verificationResponses" class="com.mbv.framework.response.VerificationResponses"/>
+
+    <bean id="emailResponses" class="com.mbv.framework.response.EmailResponses"/>
+
+    <bean id="serviceContext" class="com.mbv.framework.spring.ServiceContext"/>
+
+    <bean id="keyGenerator" class="com.mbv.framework.util.KeyGenerator" />
+
+    <bean id="cacheConfig" class="com.mbv.framework.cache.CacheConfig">
+        <property name="enabled" value="true"></property>
+        <property name="maxReconnectDelay" value="30"></property>
+        <property name="nodeLocatorPolicy" value="ketama"></property>
+        <property name="operationQueueLength" value="20000"></property>
+        <property name="compressionThreshold" value="16384"></property>
+        <property name="operationTimeout" value="2500"></property>
+        <property name="maxBlockTime" value="10000"></property>
+        <property name="serverList" value="127.0.0.1:11211"></property>
+    </bean>
+
+    <bean id="cacheClient" class="com.mbv.framework.cache.CacheClientImpl" destroy-method="stop"/>
+
+    <bean id="pdfUtil" class="com.mbv.framework.util.PDFUtil" />
+
+    <bean id="gcmProps" class="com.mbv.framework.props.GCMProps">
+        <property name="key" value="${gcm.key}" />
+    </bean>
+
+    <bean id="gcmUtil" class="com.mbv.framework.util.GCMUtil">
+        <property name="gcmProps" ref="gcmProps" />
+    </bean>
+
+</beans>

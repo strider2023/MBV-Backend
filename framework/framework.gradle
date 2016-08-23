@@ -1,0 +1,10 @@
+dependencies{
+    compile web
+    compile 'net.spy:spymemcached:2.10.6'
+    compile 'javax.mail:mail:1.4.7'
+    compile 'com.amazonaws:aws-java-sdk:1.9.8'
+    compile 'commons-lang:commons-lang:2.6'
+    compile 'org.apache.pdfbox:pdfbox:1.8.11'
+    compile 'com.google.code.gson:gson:2.2.4'
+}
+

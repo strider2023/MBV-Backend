@@ -1,0 +1,42 @@
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+.gradle*
+**/.classpath
+**/.project
+**/.settings
+**/bin
+**/build
+**/.idea
+**/*.iml
+**/classes
+local.properties
+pom.xml
+/build/
+/bin/
+
+framework/src/main/resources/amazonS3.properties
+
+framework/src/main/resources/email.properties
+
+framework/src/main/resources/sms.properties
+
+persist/src/main/resources/db.properties
+
+framework/src/main/resources/encryption.properties
+
+*.bat
+
+gradlew
+
+gradle/wrapper/gradle-wrapper.properties

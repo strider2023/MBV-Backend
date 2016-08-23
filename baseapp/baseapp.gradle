@@ -1,0 +1,6 @@
+dependencies {
+	compile project (':framework')
+	compile web
+	compile spring_web
+	compile spring_security
+}
